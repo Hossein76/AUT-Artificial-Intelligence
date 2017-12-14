@@ -1,0 +1,29 @@
+class State:
+    def __init__(self,parent=None,cost=0,heu=0,depth=0):
+        self.parent=parent;
+        self.cost=cost;
+        self.heu=heu;
+        self.depth=depth;
+
+
+
+class Problem:
+    def __init__(self):
+        pass;
+
+    def check_state(self,node1 , node2):
+        if (node1==node2):
+            return True;
+        else: return False;
+
+    def expand(self,node):
+        return [];
+
+    def Goal_test(self,node):
+        return False;
+
+    def Solution(self,node):
+        return [];
+
+    def initialize(self):
+        return State();
