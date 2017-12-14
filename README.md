@@ -1,1 +1,1 @@
-# AUT-Artificial-Intelligence
+# AUT-Artificial Intelligence
