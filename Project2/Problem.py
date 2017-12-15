@@ -14,17 +14,17 @@ class Problem:
         else:
             return False;
 
-    def mixe(self, parent1, parent2):
-       return State();
+    def mix(self,parent1,parent2):
+        return State();
 
-    def mutate(self, node):
+    def mutate(self,node):
         return State();
 
     def Goal_test(self,node):
-        return False
+        return False;
 
-
-    # SA
-
-    def create_neighbers(node):
+    def create_neighbers(self,node):
         return [];
+
+    def create_random_neighber(self,node):
+        return State();
