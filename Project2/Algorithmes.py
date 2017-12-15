@@ -36,20 +36,47 @@ class GeneticAlgorithm:
 
 
     def chose_parents(self):
-        random.shuffle(self.generation);
         temp_list=[];
-        for i in range(0,self.parents_number):
+        for i in range(len(self.generation)-self.parents_number,len(self.generation)):
             temp_list.append(i);
         return temp_list;
 
     def create_offspring(self,parents_list):
-        return [];
+        temp_list=[];
+        while(len(temp_list)<self.offspring_number):
+            temp_var1=random.randint(0, len(parents_list) - 1);
+            temp_var2=random.randint(0, len(parents_list) - 1);
+            if (temp_var2==temp_var1):
+                continue;
+            temp_node=self.problem.mix(parents_list[temp_var1],parents_list[temp_var2]);
+            flag=False;
+            for i in temp_list:
+                if (self.problem.check_state(i,temp_node)==True):
+                    flag=True;
+                    break;
+            if (flag==True):continue;
+            temp_list.append(temp_node);
+        return temp_list;
 
     def mutate_offspring(self,offspring_list):
-        return [];
+        temp_list=list(offspring_list);
+        for i in range(0,temp_list):
+            temp_list[i]=self.problem.mutate(temp_list[i]);
+
+        return temp_list;
 
     def evolve(self,mutated_list):
-        return [];
+        temp_list=(list(mutated_list)).extend(self.generation);
+        self.generation=[];
+        utility_sum=0;
+        for i in temp_list:
+            utility_sum+=i.utility;
+        while(len(self.generation)<self.population_size):
+            temp_var=random.randint(0, len(temp_list)-1)
+            if(temp_list[temp_var].utility<=(utility_sum*random.random())):
+                self.generation.append(temp_list[temp_var]);
+                temp_list.pop(temp_var);
+        return temp_list;
 
     def evaluate_generation(self):
         self.generation.sort(key=lambda node: node.utility);
@@ -61,6 +88,29 @@ class GeneticAlgorithm:
         if (self.problem.Goal_test(self.generation[self.population_size-1])==True):
             return [len(self.generation),self.generation[self.population_size-1]];
         return None;
+
+
+
+
+
+
+class SimulatedAnnealingAlgorithm:
+
+    def __init__(self,problem,Tmax = 25000.0 ,Tmin = 2.5  ,iteration_number = 50000 ):
+        self.problem=problem;
+        self.Tmax=Tmax;
+        self.Tmin=Tmin;
+        self.iteration_number=iteration_number;
+        self.step=(Tmax-Tmin)/iteration_number;
+        self.current_state=None;
+        self.solutaion=[];
+
+    def begin(self):
+        self.current_state=self.problem.random_node();
+        self.solutaion.append(self.current_state);
+        for i in range(0,self.iteration_number):
+            neighbers_list=self.problem.create_neighbers(self.current_state);
+            random.shuffle(neighbers_list);
 
 
 

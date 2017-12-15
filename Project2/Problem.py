@@ -13,3 +13,18 @@ class Problem:
             return True;
         else:
             return False;
+
+    def mixe(self, parent1, parent2):
+       return State();
+
+    def mutate(self, node):
+        return State();
+
+    def Goal_test(self,node):
+        return False
+
+
+    # SA
+
+    def create_neighbers(node):
+        return [];
