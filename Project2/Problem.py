@@ -14,7 +14,7 @@ class Problem:
         else:
             return False;
 
-    def mix(self,parent1,parent2):
+    def mix(self,parent1,parent2,num_attr=0):
         return State();
 
     def mutate(self,node):

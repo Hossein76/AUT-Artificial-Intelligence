@@ -25,7 +25,7 @@ class Problem:
                 return False;
         return True;
 
-    def mix(self,parent1,parent2):
+    def mix(self,parent1,parent2,num_attr=0):
         temp_node=State(poses=list(parent1.poses),utility=parent1.utility);
         for i in range(0,8):
             if (random.randint(0,1)==1):
