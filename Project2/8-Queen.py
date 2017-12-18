@@ -26,11 +26,22 @@ class Problem:
         return True;
 
     def mix(self,parent1,parent2):
-        return State();
+        temp_node=State(poses=list(parent1.poses),utility=parent1.utility);
+        for i in range(0,8):
+            if (random.randint(0,1)==1):
+                temp_node.poses[i]=parent2.poses[i];
 
-    def mutate(self,node):
+        temp_node.utility=self.calculate_utility(temp_node);
+        return temp_node;
 
-        return State();
+    def mutate(self,node1):
+        node=State(poses=list(node1.poses),utility=node1.utility);
+        for i in range(0,6):
+            if (random.randint(0,1)==1):
+                continue;
+            node.poses[random.randint(0,7)]=random.randint(0,7);
+        node.utility=self.calculate_utility(node);
+        return node;
 
     def Goal_test(self,node):
         if node.utility==0:
