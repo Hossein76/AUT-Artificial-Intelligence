@@ -189,15 +189,15 @@ class HillClimbingAlgorithm:
 
 
 class GeneticAlgorithmPaper:
-    def __init__(self,problem,population_size=35,iteration_number=50,pc=0.25,num_attr=4
+    def __init__(self,problem,population_size=35,iteration_number=50,pc=0.25,pm=0.2
                  ):
         self.problem = problem;
         self.population_size=population_size;
         self.iteration_number=iteration_number;
         self.pc=pc;
+        self.pm=pm;
         self.generation=[];
         self.generation_params=[];
-        self.num_attr=num_attr;
 
     def begin(self):
         for i in range(0,self.population_size):
@@ -206,17 +206,8 @@ class GeneticAlgorithmPaper:
         for i in range(0,self.iteration_number):
             self.generation=self.create_new_generation();
             parents_list=self.chose_parents();
-            offspring_list=self.create_offspring(parents_list);
-            mutated_list=self.mutate_offspring(offspring_list);
-            temp_list=[];
-            for j in range(0,len(mutated_list)):
-                for k in self.generation:
-                    if (self.problem.check_state(k,mutated_list[j])):
-                        temp_list.append(j);
-            mutated_list.reverse();
-            for j in temp_list:
-                mutated_list.pop(j);
-            self.generation=self.evolve(mutated_list);
+            self.create_offspring(parents_list);
+            self.mutate_offspring();
             supreme=self.evaluate_generation();
             if (supreme!=None):
                 return supreme;
@@ -256,49 +247,30 @@ class GeneticAlgorithmPaper:
                 parent_list.append(i);
         return parent_list;
 
+
     def create_offspring(self,parents_list):
         c_list=[]
         for i in range(0,len(parents_list)):
-            c_list.append(random.randint(0,self.num_attr-1));
+            c_list.append(random.randint(0,len(self.generation[0].state_list)));
 
         temp_list=[];
         for i in range(0,len(parents_list)):
-            temp_list.append(self.problem.mix(self.generation[]))
-        while(len(temp_list)<self.offspring_number):
-            temp_var1=random.randint(0,len(parents_list)-1);
-            temp_var2=random.randint(0,len(parents_list)-1);
-            if (temp_var1==temp_var2):
-                continue;
-            flag=False;
-            temp_node=self.problem.mix(parents_list[temp_var2],parents_list[temp_var1]);
-            for i in temp_list:
-                if (self.problem.check_state(i,temp_node)==True):
-                    flag=True;
-                    break;
-            if (flag==True):
-                continue;
-            temp_list.append(temp_node);
+            if(i==len(parents_list)-1):
+                temp_list.append(self.problem.mix(self.generation[parents_list[i]],self.generation[parents_list[0]],c_list[i]));
+            else:
+                temp_list.append(self.problem.mix(self.generation[parents_list[i]],self.generation[parents_list[i+1]],c_list[i]));
 
-        return temp_list;
+        for i in range(0,len(parents_list)):
+            self.generation[parents_list[i]]=temp_list[i];
+        return list(temp_list);
 
-    def mutate_offspring(self,offspring_list):
-        temp_list=list(offspring_list);
-        for i in range(0,len(temp_list)-1):
-            temp_list[i]=self.problem.mutate(temp_list[i]);
-        return temp_list;
 
-    def evolve(self,mutated_list):
-        temp_list=(list(mutated_list)).extend(self.generation);
-        self.generation=[];
-        util_sum=0;
-        for i in temp_list:
-            util_sum+=i.utility;
-        while(len(self.generation)<self.population_size):
-            temp_var=random.randint(0,len(temp_list)-1);
-            util_var = random.randint(0, util_sum);
-            if(temp_list[temp_var].utility>=util_var):
-                self.generation.append(temp_list.pop(temp_var));
-        return temp_list;
+    def mutate_offspring(self):
+        temp_var=int(self.pm*len(self.generation[0].state_list)*len(self.generation));
+        for i in range (0,temp_var):
+            rand_var=random.randint(0,len(self.generation)-1);
+            self.generation[rand_var]=self.problem.mutate(self.generation[rand_var]);
+
 
     def evaluate_generation(self):
         self.generation.sort(key=lambda node: node.utility);
