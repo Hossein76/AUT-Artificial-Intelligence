@@ -52,7 +52,7 @@ class Problem:
                 if(j==node.state_list[i]):
                     j+=1;
                     continue;
-                temp=State(state_list=node.state_list);
+                temp=State(state_list=list(node.state_list));
                 temp.state_list[i]=j;
                 temp.utility=self.calculate_utility(temp);
                 neighbers.append(temp);
