@@ -44,8 +44,8 @@ class Problem:
             return  True;
         else : return False;
 
-    def create_neighbers(self,node):
-        neighbers=[];
+    def create_neighbors(self,node):
+        neighbors=[];
         for i in range(0,8):
             j=0;
             while(j<8):
@@ -55,11 +55,11 @@ class Problem:
                 temp=State(state_list=list(node.state_list));
                 temp.state_list[i]=j;
                 temp.utility=self.calculate_utility(temp);
-                neighbers.append(temp);
+                neighbors.append(temp);
                 j+=1;
-        return neighbers ;
+        return neighbors ;
 
-    def create_random_neighber(self,node):
+    def create_random_neighbor(self,node):
         temp=State(state_list=list(node.state_list),utility=node.utility);
         rand_var=random.randint(0,7);
         rand_var2=random.randint(0,7);

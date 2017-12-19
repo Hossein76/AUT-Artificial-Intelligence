@@ -6,17 +6,21 @@ class State:
 
 class Problem:
     def __init__(self,matrix=[]):
-        matrix;
         self.degree=[];
-        for i in matrix:
-            temp=0;
-            for j in i:
-                temp+=j;
-            self.degree.append(temp);
         self.graph_nodes=[];
-        for i in range(0,len(matrix))
+        for i in range(0,len(matrix)):
+            temp_list=[];
+            for j in range(0,len(matrix[i])):
+                if (matrix[i][j]==1):
+                    temp_list.append(j);
+            self.graph_nodes.append(temp_list);
+        for i in self.graph_nodes:
+            self.degree.append(len(i));
+
     def random_node(self):
-        return State();
+        node=State(state_list=[random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1),random.randint(0,1)])
+        node.utility=self.calculate_utility(node);
+        return node;
 
     def check_state(self,node1,node2):
         for i in range(0,len(node1.state_list)):
@@ -33,19 +37,43 @@ class Problem:
 
     def mutate(self,node1):
         node=State(state_list=list(node1.state_list),utility=node1.utility);
-        node.state_list[random.randint(0,len(node.state_list)-1)]=random.randint(0,7);
+        node.state_list[random.randint(0,len(node.state_list)-1)]=random.randint(0,1);
         node.utility=self.calculate_utility(node);
         return node;
 
     def Goal_test(self,node):
-        return False;
+        if node.utility==0:
+            return True;
+        else:
+            return False;
 
-    def create_neighbers(self,node):
-        return [];
+    def create_neighbors(self,node):
+        temp_list=[];
+        for i in range(0,len(node.state_list)):
+            temp_node=State(state_list=list(node.state_list));
+            temp_node.state_list[i]=1-temp_node.state_list[i];
+            temp_node.utility=self.calculate_utility(temp_node);
+            temp_list.append(temp_node);
+        return temp_list;
 
-    def create_random_neighber(self,node):
-        return State();
+    def create_random_neighbor(self,node):
+        temp_node = State(state_list=list(node.state_list));
+        rand_var=random.randint(0,len(node.state_list)-1);
+        temp_node.state_list[rand_var] = 1 - temp_node.state_list[rand_var];
+        temp_node.utility = self.calculate_utility(temp_node);
+        return temp_node;
 
     def calculate_utility(self, node):
         utility=0;
+        degree0=0;
+        degree1=0;
+        for i in range(0,len(node.state_list)):
+            if node.state_list[i]==1:
+                degree1+=self.degree[i];
+                for j in self.graph_nodes[i]:
+                    if (node.state_list[j]==0):
+                        utility+=1;
+            else:
+                degree0+= self.degree[i];
+        utility+=abs(degree1-degree0);
         return utility;

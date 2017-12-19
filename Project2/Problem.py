@@ -32,10 +32,10 @@ class Problem:
     def Goal_test(self,node):
         return False;
 
-    def create_neighbers(self,node):
+    def create_neighbors(self,node):
         return [];
 
-    def create_random_neighber(self,node):
+    def create_random_neighbor(self,node):
         return State();
 
     def calculate_utility(self, node):

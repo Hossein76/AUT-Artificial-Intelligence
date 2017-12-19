@@ -91,8 +91,6 @@ class GeneticAlgorithm:
         return None;
 
 
-
-
 class SimulatedAnnealingAlgorithm:
     def __init__(self,problem,Tmax=2500,Tmin=2.5,iteration_number=5000):
         self.problem=problem;
@@ -104,20 +102,19 @@ class SimulatedAnnealingAlgorithm:
         self.solution=[];
         self.visited_nodes=0;
 
-
     def begin(self):
         self.current_state=self.problem.random_node();
         self.solution.append(self.current_state);
         for i in range(1,self.iteration_number):
             if(self.problem.Goal_test(self.current_state)==True):
                 return self.solution;
-            neighbers_list=random.shuffle(self.problem.create_neighbers(self.current_state));
-            self.visited_nodes+=len(neighbers_list);
-            if (neighbers_list[0].utility>=self.current_state.utility):
-                self.current_state=neighbers_list[0];
+            neighbors_list=random.shuffle(self.problem.create_neighbors(self.current_state));
+            self.visited_nodes+=len(neighbors_list);
+            if (neighbors_list[0].utility>=self.current_state.utility):
+                self.current_state=neighbors_list[0];
                 self.solution.append(self.current_state);
             elif(random.randint(0,self.Tmax)<=(self.Tmax-(i*self.step))):
-                self.current_state = neighbers_list[0];
+                self.current_state = neighbors_list[0];
                 self.solution.append(self.current_state);
 
 
@@ -134,34 +131,34 @@ class HillClimbingAlgorithm:
         self.current_state=self.problem.random_node();
         temp_solution_list=[self.current_state];
         while(True):
-            if(self.mode=="simple"):
-                neighbers_list = self.problem.create_neighbers(self.current_state);
-                self.visited_nodes+=len(neighbers_list);
-                neighbers_list.sort(key=lambda node: node.utility);
-                if (neighbers_list[-1].utility < self.current_state.utility): break;
-                self.current_state=neighbers_list[-1];
+            if(self.mode == "simple"):
+                neighbors_list = self.problem.create_neighbors(self.current_state);
+                self.visited_nodes+=len(neighbors_list);
+                neighbors_list.sort(key=lambda node: node.utility);
+                if (neighbors_list[-1].utility < self.current_state.utility): break;
+                self.current_state=neighbors_list[-1];
                 temp_solution_list.append(self.current_state);
                 if (self.problem.Goal_test(self.current_state)==True):
                     break;
-            elif(self.mode=="stochastic"):
-                neighbers_list = self.problem.create_neighbers(self.current_state);
-                self.visited_nodes+=len(neighbers_list);
-                neighbers_list.sort(key=lambda node: node.utility);
-                if (neighbers_list[-1].utility < self.current_state.utility): break;
-                rand_var=random.randomint(0,len(neighbers_list)-1)
-                while(neighbers_list[rand_var].utility<self.current_state.utility):
-                    rand_var = random.randomint(0, len(neighbers_list) - 1);
-                self.current_state = neighbers_list[rand_var];
+            elif(self.mode == "stochastic"):
+                neighbors_list = self.problem.create_neighbors(self.current_state);
+                self.visited_nodes+=len(neighbors_list);
+                neighbors_list.sort(key=lambda node: node.utility);
+                if (neighbors_list[-1].utility < self.current_state.utility): break;
+                rand_var=random.randint(0,len(neighbors_list)-1)
+                while(neighbors_list[rand_var].utility<self.current_state.utility):
+                    rand_var = random.randint(0, len(neighbors_list) - 1);
+                self.current_state = neighbors_list[rand_var];
                 temp_solution_list.append(self.current_state);
                 if (self.problem.Goal_test(self.current_state) == True):
                     break;
-            elif (self.mode=="first-choice"):
-                random_neighber = self.problem.create_random_neighber(self.current_state);
+            elif (self.mode == "first-choice"):
+                random_neighbor = self.problem.create_random_neighbor(self.current_state);
                 self.visited_nodes+=1;
-                while(random_neighber.utility<self.current_state):
-                    random_neighber = self.problem.create_random_neighber(self.current_state);
+                while(random_neighbor.utility<self.current_state):
+                    random_neighbor = self.problem.create_random_neighbor(self.current_state);
                     self.visited_nodes += 1;
-                self.current_state =random_neighber;
+                self.current_state =random_neighbor;
                 temp_solution_list.append(self.current_state);
                 if (self.problem.Goal_test(self.current_state) == True):
                     break;
@@ -184,8 +181,6 @@ class HillClimbingAlgorithm:
                     self.begin();
             else:
                 self.begin();
-
-
 
 
 class GeneticAlgorithmPaper:
@@ -237,8 +232,6 @@ class GeneticAlgorithmPaper:
                     break;
         return list(new_generation);
 
-
-
     def chose_parents(self):
         parent_list=[];
         for i in range(0,len(self.generation)):
@@ -246,7 +239,6 @@ class GeneticAlgorithmPaper:
             if(temp_var<self.pc):
                 parent_list.append(i);
         return parent_list;
-
 
     def create_offspring(self,parents_list):
         c_list=[]
@@ -264,13 +256,11 @@ class GeneticAlgorithmPaper:
             self.generation[parents_list[i]]=temp_list[i];
         return list(temp_list);
 
-
     def mutate_offspring(self):
         temp_var=int(self.pm*len(self.generation[0].state_list)*len(self.generation));
         for i in range (0,temp_var):
             rand_var=random.randint(0,len(self.generation)-1);
             self.generation[rand_var]=self.problem.mutate(self.generation[rand_var]);
-
 
     def evaluate_generation(self):
         self.generation.sort(key=lambda node: node.utility);
