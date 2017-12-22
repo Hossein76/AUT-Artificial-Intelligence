@@ -226,7 +226,8 @@ class GeneticAlgorithmPaper:
             self.mutate_offspring();
             supreme=self.evaluate_generation();
             if (supreme!=None):
-                return supreme;
+                pass;
+                #return supreme;
         return supreme;
 
     def create_new_generation(self):
@@ -298,13 +299,14 @@ class GeneticAlgorithmPaper:
 matrix=[[0,1,1,0,1,0,0,0,0,0,0,0],[1,0,1,0,0,0,0,0,0,0,0,0],[1,1,0,1,0,0,0,0,1,0,0,0],[0,0,1,0,1,0,1,0,0,0,0,0],[1,0,0,1,0,1,0,0,0,0,0,0],[0,0,0,0,1,0,1,0,0,0,0,0]
     , [0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1],[0,0,0,0,0,0,1,0,1,1,1,0],[0,0,1,0,0,0,0,1,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,1,0],[0,0,0,0,0,0,0,1,0,1,0,1],[0,0,0,0,0,0,1,0,0,0,1,0]];
 
-a=GeneticAlgorithmPaper(problem=Problem(),population_size=35,iteration_number=50,pc=0.25,pm=0.2);
+a=GeneticAlgorithmPaper(problem=Problem(),population_size=35,iteration_number=500,pc=0.25,pm=0.2);
 b=a.begin();
 
+print ("[",end="");
 
 for i in a.generation_params:
-   print (i);
+   print (i[0],",",i[1],",",i[2],";"," ...");
 
 
 
-print (b);
+print ("]");
