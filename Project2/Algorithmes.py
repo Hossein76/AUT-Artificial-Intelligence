@@ -299,14 +299,28 @@ class GeneticAlgorithmPaper:
 matrix=[[0,1,1,0,1,0,0,0,0,0,0,0],[1,0,1,0,0,0,0,0,0,0,0,0],[1,1,0,1,0,0,0,0,1,0,0,0],[0,0,1,0,1,0,1,0,0,0,0,0],[1,0,0,1,0,1,0,0,0,0,0,0],[0,0,0,0,1,0,1,0,0,0,0,0]
     , [0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1],[0,0,0,0,0,0,1,0,1,1,1,0],[0,0,1,0,0,0,0,1,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,1,0],[0,0,0,0,0,0,0,1,0,1,0,1],[0,0,0,0,0,0,1,0,0,0,1,0]];
 
-a=GeneticAlgorithmPaper(problem=Problem(),population_size=35,iteration_number=500,pc=0.25,pm=0.2);
-b=a.begin();
+
+temp_list1=[];
+for k in range(1,99,2):
+    temp_list2 = [0, 0, 0];
+    for j in range(0,50):
+        print(k,"---",j)
+        a=GeneticAlgorithmPaper(problem=Problem(),population_size=k,iteration_number=200,pc=0.25,pm=0.2);
+        b=a.begin();
+        for i in a.generation_params:
+            temp_list2[0]+=i[0]/len(a.generation_params);
+            temp_list2[1]+=i[1]/len(a.generation_params);
+            temp_list2[2]+=i[2]/len(a.generation_params);
+    temp_list2[0]/=50;
+    temp_list2[1]/=50;
+    temp_list2[2]/=50;
+    temp_list1.append(list(temp_list2));
 
 print ("[",end="");
 
-for i in a.generation_params:
-   print (i[0],",",i[1],",",i[2],";"," ...");
+for i in temp_list1:
+    print(i[0],",",i[1],",",i[2],"; ...");
 
 
 
-print ("]");
+
