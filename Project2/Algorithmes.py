@@ -1,4 +1,8 @@
 import random
+import math
+from Equation import *
+
+
 
 
 class GeneticAlgorithm:
@@ -92,15 +96,25 @@ class GeneticAlgorithm:
 
 
 class SimulatedAnnealingAlgorithm:
-    def __init__(self,problem,Tmax=2500,Tmin=2.5,iteration_number=5000):
+    def __init__(self,problem,Tmax=2500,Tmin=2.5,iteration_number=150,annealing_mode="simple"):
         self.problem=problem;
         self.Tmax=Tmax;
         self.Tmin=Tmin;
         self.iteration_number=iteration_number;
+        self.tempreture=Tmax-Tmin;
         self.step=(Tmax-Tmin)/iteration_number;
         self.current_state=None;
         self.solution=[];
         self.visited_nodes=0;
+        self.annealing_mode=annealing_mode;
+
+    def anneal(self,i):
+        if(self.annealing_mode=="simple"):
+            self.tempreture-=self.step;
+        elif(self.annealing_mode=="log"):
+            self.tempreture=(self.Tmax-self.Tmin)/(math.log(i)+1);
+        elif(self.annealing_mode=="exp"):
+            self.tempreture = (self.Tmax - self.Tmin) /(math.exp(i));
 
     def begin(self):
         self.current_state=self.problem.random_node();
@@ -108,14 +122,18 @@ class SimulatedAnnealingAlgorithm:
         for i in range(1,self.iteration_number):
             if(self.problem.Goal_test(self.current_state)==True):
                 return self.solution;
-            neighbors_list=random.shuffle(self.problem.create_neighbors(self.current_state));
+            neighbors_list=list(self.problem.create_neighbors(self.current_state));
+            random.shuffle(neighbors_list);
+            self.anneal(i);
+            random.shuffle(neighbors_list);
             self.visited_nodes+=len(neighbors_list);
             if (neighbors_list[0].utility>=self.current_state.utility):
                 self.current_state=neighbors_list[0];
                 self.solution.append(self.current_state);
-            elif(random.randint(0,self.Tmax)<=(self.Tmax-(i*self.step))):
+            elif(random.randint(0,self.Tmax)<=(self.tempreture+self.Tmin)):
                 self.current_state = neighbors_list[0];
                 self.solution.append(self.current_state);
+        return self.solution;
 
 
 class HillClimbingAlgorithm:
@@ -131,22 +149,25 @@ class HillClimbingAlgorithm:
         self.current_state=self.problem.random_node();
         temp_solution_list=[self.current_state];
         while(True):
+            print (self.current_state.utility,"one step \n")
             if(self.mode == "simple"):
-                neighbors_list = self.problem.create_neighbors(self.current_state);
+                neighbors_list = list(self.problem.create_neighbors(self.current_state));
+                random.shuffle(neighbors_list);
                 self.visited_nodes+=len(neighbors_list);
                 neighbors_list.sort(key=lambda node: node.utility);
-                if (neighbors_list[-1].utility < self.current_state.utility): break;
-                self.current_state=neighbors_list[-1];
+                if (neighbors_list[0].utility >self.current_state.utility): break;
+                self.current_state=neighbors_list[0];
                 temp_solution_list.append(self.current_state);
                 if (self.problem.Goal_test(self.current_state)==True):
                     break;
             elif(self.mode == "stochastic"):
-                neighbors_list = self.problem.create_neighbors(self.current_state);
+                neighbors_list = list(self.problem.create_neighbors(self.current_state));
+                random.shuffle(neighbors_list);
                 self.visited_nodes+=len(neighbors_list);
                 neighbors_list.sort(key=lambda node: node.utility);
-                if (neighbors_list[-1].utility < self.current_state.utility): break;
+                if (neighbors_list[0].utility >self.current_state.utility): break;
                 rand_var=random.randint(0,len(neighbors_list)-1)
-                while(neighbors_list[rand_var].utility<self.current_state.utility):
+                while(neighbors_list[rand_var].utility>self.current_state.utility):
                     rand_var = random.randint(0, len(neighbors_list) - 1);
                 self.current_state = neighbors_list[rand_var];
                 temp_solution_list.append(self.current_state);
@@ -155,7 +176,7 @@ class HillClimbingAlgorithm:
             elif (self.mode == "first-choice"):
                 random_neighbor = self.problem.create_random_neighbor(self.current_state);
                 self.visited_nodes+=1;
-                while(random_neighbor.utility<self.current_state):
+                while(random_neighbor.utility>self.current_state.utility):
                     random_neighbor = self.problem.create_random_neighbor(self.current_state);
                     self.visited_nodes += 1;
                 self.current_state =random_neighbor;
@@ -173,7 +194,7 @@ class HillClimbingAlgorithm:
                     return self.solution;
                 else:
                     self.begin();
-            elif(self.solution[-1].utility<temp_solution_list[-1].utility):
+            elif(self.solution[-1].utility>temp_solution_list[-1].utility):
                 self.solution = list(temp_solution_list);
                 if (self.problem.Gaol_test(self.solution[-1]) == True):
                     return self.solution;
@@ -206,6 +227,7 @@ class GeneticAlgorithmPaper:
             supreme=self.evaluate_generation();
             if (supreme!=None):
                 return supreme;
+        return supreme;
 
     def create_new_generation(self):
         fitness=[];
@@ -220,7 +242,7 @@ class GeneticAlgorithmPaper:
             r.append(random.random());
 
         for i in fitness:
-            probability.append(fitness/total_fitness);
+            probability.append(i/total_fitness);
 
         for i in range(1,len(probability)):
             probability[i]+=probability[i-1];
@@ -268,9 +290,21 @@ class GeneticAlgorithmPaper:
         for i in self.generation:
             temp_var+=i.utility;
         temp_var= temp_var/self.population_size;
-        self.generation_params.append([self.generation[0],self.generation[self.population_size-1],temp_var]);
-        if (self.problem.Goal_test(self.generation[self.population_size-1])==True):
+        self.generation_params.append([self.generation[0].utility,self.generation[self.population_size-1].utility,temp_var]);
+        if (self.problem.Goal_test(self.generation[0])==True):
             return [len(self.generation),self.generation[self.population_size-1]];
         return None;
 
+matrix=[[0,1,1,0,1,0,0,0,0,0,0,0],[1,0,1,0,0,0,0,0,0,0,0,0],[1,1,0,1,0,0,0,0,1,0,0,0],[0,0,1,0,1,0,1,0,0,0,0,0],[1,0,0,1,0,1,0,0,0,0,0,0],[0,0,0,0,1,0,1,0,0,0,0,0]
+    , [0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1],[0,0,0,0,0,0,1,0,1,1,1,0],[0,0,1,0,0,0,0,1,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,1,0],[0,0,0,0,0,0,0,1,0,1,0,1],[0,0,0,0,0,0,1,0,0,0,1,0]];
 
+a=GeneticAlgorithmPaper(problem=Problem(),population_size=35,iteration_number=50,pc=0.25,pm=0.2);
+b=a.begin();
+
+
+for i in a.generation_params:
+   print (i);
+
+
+
+print (b);

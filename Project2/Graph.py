@@ -71,9 +71,12 @@ class Problem:
             if node.state_list[i]==1:
                 degree1+=self.degree[i];
                 for j in self.graph_nodes[i]:
-                    if (node.state_list[j]==0):
-                        utility+=1;
+                    if (node.state_list[j]==1):
+                        utility+=0.5;
             else:
                 degree0+= self.degree[i];
+                for j in self.graph_nodes[i]:
+                    if (node.state_list[j] == 0):
+                        utility += 0.5;
         utility+=abs(degree1-degree0);
         return utility;
